@@ -22,6 +22,14 @@ export const auth = betterAuth({
     autoSignIn: false,
     requireEmailVerification: true,
   },
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+      },
+    },
+  },
   trustedOrigins: [process.env.APP_URL!],
 
   emailVerification: {
