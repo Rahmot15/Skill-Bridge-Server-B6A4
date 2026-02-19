@@ -9,7 +9,7 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.APP_URL || "http://localhost:3000",
     credentials: true,
   })
 );
