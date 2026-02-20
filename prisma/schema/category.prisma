@@ -2,9 +2,7 @@ model Category {
   id          String   @id @default(uuid())
   title       String
   description String?
-  tutorId     String
   createdAt   DateTime @default(now())
 
-  tutor    User      @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   bookings Booking[]
 }

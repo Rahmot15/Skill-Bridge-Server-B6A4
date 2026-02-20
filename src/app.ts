@@ -5,6 +5,7 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import errorHandler from "./middlewares/errorHandler";
 import notFound from "./middlewares/notFound";
+import { CategoryRoutes } from "./modules/category/category.route";
 
 const app: Application = express();
 app.all("/api/auth/*splat", toNodeHandler(auth));
@@ -19,6 +20,8 @@ app.use(
 app.use(express.json());
 
 app.use("/api/tutors", TutorProfileRoutes);
+
+app.use("/api/categories", CategoryRoutes);
 
 app.get("/", (req, res) => {
   res.send("SkillBridge API running...");

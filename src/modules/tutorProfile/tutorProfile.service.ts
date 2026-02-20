@@ -36,7 +36,7 @@ const getAllTutors = async () => {
     include: {
       user: {
         include: {
-          skills: true,
+          categories: true,
         },
       },
     },
@@ -49,7 +49,7 @@ const getSingleTutor = async (id: string) => {
     include: {
       user: {
         include: {
-          skills: true,
+          categories: true,
         },
       },
     },

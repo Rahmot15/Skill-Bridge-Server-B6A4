@@ -5,16 +5,16 @@ enum BookingStatus {
 }
 
 model Booking {
-  id        String        @id @default(uuid())
-  studentId String
-  tutorId   String
-  skillId   String
-  message   String?
-  date      DateTime?
-  status    BookingStatus @default(PENDING)
-  createdAt DateTime      @default(now())
+  id         String        @id @default(uuid())
+  studentId  String
+  tutorId    String
+  categoryId String
+  message    String?
+  date       DateTime?
+  status     BookingStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
 
-  student User  @relation("StudentBookings", fields: [studentId], references: [id], onDelete: Cascade)
-  tutor   User  @relation("TutorBookings", fields: [tutorId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  student  User     @relation("StudentBookings", fields: [studentId], references: [id], onDelete: Cascade)
+  tutor    User     @relation("TutorBookings", fields: [tutorId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
