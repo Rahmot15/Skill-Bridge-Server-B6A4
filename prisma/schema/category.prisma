@@ -1,4 +1,4 @@
-model Skill {
+model Category {
   id          String   @id @default(uuid())
   title       String
   description String?

@@ -6,7 +6,7 @@ enum BookingStatus {
 
 model Booking {
   id        String        @id @default(uuid())
-  learnerId String
+  studentId String
   tutorId   String
   skillId   String
   message   String?
@@ -14,7 +14,7 @@ model Booking {
   status    BookingStatus @default(PENDING)
   createdAt DateTime      @default(now())
 
-  learner User  @relation("LearnerBookings", fields: [learnerId], references: [id], onDelete: Cascade)
+  student User  @relation("StudentBookings", fields: [studentId], references: [id], onDelete: Cascade)
   tutor   User  @relation("TutorBookings", fields: [tutorId], references: [id], onDelete: Cascade)
-  skill   Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [skillId], references: [id], onDelete: Cascade)
 }
