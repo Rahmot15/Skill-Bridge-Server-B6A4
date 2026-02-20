@@ -34,11 +34,7 @@ const createTutorProfile = async (
 const getAllTutors = async () => {
   return prisma.tutorProfile.findMany({
     include: {
-      user: {
-        include: {
-          categories: true,
-        },
-      },
+      user: true,
     },
   });
 };
@@ -47,11 +43,7 @@ const getSingleTutor = async (id: string) => {
   return prisma.tutorProfile.findUnique({
     where: { id },
     include: {
-      user: {
-        include: {
-          categories: true,
-        },
-      },
+      user: true,
     },
   });
 };
