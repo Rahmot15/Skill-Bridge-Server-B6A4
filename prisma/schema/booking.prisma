@@ -1,0 +1,20 @@
+enum BookingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Booking {
+  id        String        @id @default(uuid())
+  learnerId String
+  tutorId   String
+  skillId   String
+  message   String?
+  date      DateTime?
+  status    BookingStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+
+  learner User  @relation("LearnerBookings", fields: [learnerId], references: [id], onDelete: Cascade)
+  tutor   User  @relation("TutorBookings", fields: [tutorId], references: [id], onDelete: Cascade)
+  skill   Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+}

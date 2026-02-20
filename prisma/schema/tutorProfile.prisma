@@ -1,0 +1,22 @@
+model TutorProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  title           String?
+  bio             String?
+  education       String?
+  experienceYears Int?
+  hourlyRate      Int?
+  availability    String?
+
+  rating            Float @default(0)
+  totalReviews      Int   @default(0)
+  totalStudents     Int   @default(0)
+  completedSessions Int   @default(0)
+
+  languages String[]
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
