@@ -6,9 +6,11 @@ const router = express.Router();
 
 router.post("/", auth(UserRole.STUDENT), BookingController.createBooking);
 
-router.get("/my", auth(UserRole.STUDENT), BookingController.getMyBookings);
+router.get("/", auth(UserRole.STUDENT), BookingController.getMyBookings);
 
 router.get("/tutor", auth(UserRole.TUTOR), BookingController.getTutorBookings);
+
+router.get("/:id", auth(), BookingController.getBookingById);
 
 router.patch("/:id", auth(UserRole.TUTOR), BookingController.updateStatus);
 
