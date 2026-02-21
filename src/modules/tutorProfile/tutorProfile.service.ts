@@ -48,8 +48,24 @@ const getSingleTutor = async (id: string) => {
   });
 };
 
+const updateTutorProfile = async (userId: string, payload: any) => {
+  return prisma.tutorProfile.update({
+    where: { userId },
+    data: payload,
+  });
+};
+
+const updateAvailability = async (userId: string, availability: string) => {
+  return prisma.tutorProfile.update({
+    where: { userId },
+    data: { availability },
+  });
+};
+
 export const TutorProfileService = {
   createTutorProfile,
   getAllTutors,
   getSingleTutor,
+  updateTutorProfile,
+  updateAvailability,
 };

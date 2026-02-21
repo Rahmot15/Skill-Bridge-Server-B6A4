@@ -44,8 +44,40 @@ const getSingleTutor = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateTutorProfile = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user!.id;
+
+  const result = await TutorProfileService.updateTutorProfile(
+    userId,
+    req.body
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Tutor profile updated",
+    data: result,
+  });
+});
+
+const updateAvailability = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user!.id;
+
+  const result = await TutorProfileService.updateAvailability(
+    userId,
+    req.body.availability
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Availability updated",
+    data: result,
+  });
+});
+
 export const TutorProfileController = {
   createTutorProfile,
   getAllTutors,
   getSingleTutor,
+  updateTutorProfile,
+  updateAvailability,
 };

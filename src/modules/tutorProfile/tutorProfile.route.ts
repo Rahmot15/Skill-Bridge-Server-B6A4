@@ -12,4 +12,16 @@ router.post(
 router.get("/", TutorProfileController.getAllTutors);
 router.get("/:id", TutorProfileController.getSingleTutor);
 
+router.put(
+  "/profile",
+  auth(UserRole.TUTOR),
+  TutorProfileController.updateTutorProfile,
+);
+
+router.put(
+  "/availability",
+  auth(UserRole.TUTOR),
+  TutorProfileController.updateAvailability,
+);
+
 export const TutorProfileRoutes = router;
