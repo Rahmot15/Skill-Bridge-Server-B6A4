@@ -17,4 +17,6 @@ model Booking {
   student  User     @relation("StudentBookings", fields: [studentId], references: [id], onDelete: Cascade)
   tutor    User     @relation("TutorBookings", fields: [tutorId], references: [id], onDelete: Cascade)
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  review Review?
 }

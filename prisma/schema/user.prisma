@@ -22,6 +22,9 @@ model User {
   studentBookings Booking[] @relation("StudentBookings")
   tutorBookings   Booking[] @relation("TutorBookings")
 
+  studentReviews Review[] @relation("StudentReviews")
+  tutorReviews   Review[] @relation("TutorReviews")
+
   @@map("user")
 }
 

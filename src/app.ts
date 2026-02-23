@@ -7,6 +7,7 @@ import errorHandler from "./middlewares/errorHandler";
 import notFound from "./middlewares/notFound";
 import { CategoryRoutes } from "./modules/category/category.route";
 import { BookingRoutes } from "./modules/booking/booking.route";
+import { ReviewRoutes } from "./modules/review/review.route";
 
 const app: Application = express();
 app.all("/api/auth/*splat", toNodeHandler(auth));
@@ -25,6 +26,8 @@ app.use("/api/tutors", TutorProfileRoutes);
 app.use("/api/categories", CategoryRoutes);
 
 app.use("/api/bookings", BookingRoutes);
+
+app.use("/api/reviews", ReviewRoutes);
 
 app.get("/", (req, res) => {
   res.send("SkillBridge API running...");
