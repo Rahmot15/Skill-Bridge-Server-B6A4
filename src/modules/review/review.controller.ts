@@ -14,6 +14,18 @@ const createReview = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getTutorReviews = catchAsync(async (req: Request, res: Response) => {
+  const { tutorId } = req.params;
+
+  const result = await ReviewService.getTutorReviews(tutorId as string);
+
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
 export const ReviewController = {
   createReview,
+  getTutorReviews
 };
