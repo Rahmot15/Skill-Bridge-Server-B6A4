@@ -62,10 +62,26 @@ const updateAvailability = async (userId: string, availability: string) => {
   });
 };
 
+const getMyTutorProfile = async (userId: string) => {
+  const result = await prisma.tutorProfile.findUnique({
+    where: { userId },
+    include: {
+      user: true,
+    },
+  });
+
+  if (!result) {
+    throw new Error("Tutor profile not found");
+  }
+
+  return result;
+};
+
 export const TutorProfileService = {
   createTutorProfile,
   getAllTutors,
   getSingleTutor,
   updateTutorProfile,
   updateAvailability,
+  getMyTutorProfile
 };

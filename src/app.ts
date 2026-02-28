@@ -11,7 +11,7 @@ import { ReviewRoutes } from "./modules/review/review.route";
 import { AdminRoutes } from "./modules/admin/admin.route";
 
 const app: Application = express();
-app.all("/api/auth/*splat", toNodeHandler(auth));
+
 
 app.use(
   cors({
@@ -21,6 +21,8 @@ app.use(
 );
 
 app.use(express.json());
+
+app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use("/api/tutors", TutorProfileRoutes);
 

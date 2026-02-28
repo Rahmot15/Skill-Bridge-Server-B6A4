@@ -389,7 +389,7 @@ var auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    autoSignIn: false,
+    autoSignIn: true,
     requireEmailVerification: true
   },
   user: {
@@ -400,7 +400,7 @@ var auth = betterAuth({
       }
     }
   },
-  trustedOrigins: [process.env.APP_URL],
+  trustedOrigins: [process.env.APP_URL, "http://localhost:3000"],
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
@@ -643,6 +643,9 @@ var auth = betterAuth({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET
     }
+  },
+  redirects: {
+    signInSuccess: process.env.APP_URL
   }
 });
 
@@ -1095,7 +1098,6 @@ var AdminRoutes = router5;
 
 // src/app.ts
 var app = express6();
-app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use(
   cors({
     origin: process.env.APP_URL || "http://localhost:3000",
@@ -1103,6 +1105,7 @@ app.use(
   })
 );
 app.use(express6.json());
+app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use("/api/tutors", TutorProfileRoutes);
 app.use("/api/categories", CategoryRoutes);
 app.use("/api/bookings", BookingRoutes);

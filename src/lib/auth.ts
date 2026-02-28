@@ -19,7 +19,7 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    autoSignIn: false,
+    autoSignIn: true,
     requireEmailVerification: true,
   },
   user: {
@@ -30,7 +30,7 @@ export const auth = betterAuth({
       },
     },
   },
-  trustedOrigins: [process.env.APP_URL!],
+  trustedOrigins: [process.env.APP_URL!, "http://localhost:3000",],
 
   emailVerification: {
     sendOnSignUp: true,
@@ -278,4 +278,7 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     },
   },
+  redirects: {
+  signInSuccess: process.env.APP_URL!,
+},
 });

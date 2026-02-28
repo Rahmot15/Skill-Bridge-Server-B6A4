@@ -74,10 +74,22 @@ const updateAvailability = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyTutorProfile = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user!.id;
+
+  const result = await TutorProfileService.getMyTutorProfile(userId);
+
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
 export const TutorProfileController = {
   createTutorProfile,
   getAllTutors,
   getSingleTutor,
   updateTutorProfile,
   updateAvailability,
+  getMyTutorProfile
 };
