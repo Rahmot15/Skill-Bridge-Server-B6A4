@@ -286,12 +286,25 @@ var updateAvailability = async (userId, availability) => {
     data: { availability }
   });
 };
+var getMyTutorProfile = async (userId) => {
+  const result = await prisma.tutorProfile.findUnique({
+    where: { userId },
+    include: {
+      user: true
+    }
+  });
+  if (!result) {
+    throw new Error("Tutor profile not found");
+  }
+  return result;
+};
 var TutorProfileService = {
   createTutorProfile,
   getAllTutors,
   getSingleTutor,
   updateTutorProfile,
-  updateAvailability
+  updateAvailability,
+  getMyTutorProfile
 };
 
 // src/utils/catchAsync.ts
@@ -360,12 +373,21 @@ var updateAvailability2 = catchAsync_default(async (req, res) => {
     data: result
   });
 });
+var getMyTutorProfile2 = catchAsync_default(async (req, res) => {
+  const userId = req.user.id;
+  const result = await TutorProfileService.getMyTutorProfile(userId);
+  res.status(200).json({
+    success: true,
+    data: result
+  });
+});
 var TutorProfileController = {
   createTutorProfile: createTutorProfile2,
   getAllTutors: getAllTutors2,
   getSingleTutor: getSingleTutor2,
   updateTutorProfile: updateTutorProfile2,
-  updateAvailability: updateAvailability2
+  updateAvailability: updateAvailability2,
+  getMyTutorProfile: getMyTutorProfile2
 };
 
 // src/lib/auth.ts
@@ -387,6 +409,11 @@ var auth = betterAuth({
     provider: "postgresql"
     // or "mysql", "postgresql", ...etc
   }),
+  cookies: {
+    domain: ".vercel.app",
+    secure: true,
+    sameSite: "none"
+  },
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
@@ -691,6 +718,11 @@ router.post(
   TutorProfileController.createTutorProfile
 );
 router.get("/", TutorProfileController.getAllTutors);
+router.get(
+  "/me",
+  auth_default("TUTOR" /* TUTOR */),
+  TutorProfileController.getMyTutorProfile
+);
 router.get("/:id", TutorProfileController.getSingleTutor);
 router.put(
   "/profile",
@@ -1100,7 +1132,7 @@ var AdminRoutes = router5;
 var app = express6();
 app.use(
   cors({
-    origin: process.env.APP_URL || "http://localhost:3000",
+    origin: process.env.APP_URL || "https://skill-bridge-client-mauve.vercel.app",
     credentials: true
   })
 );
