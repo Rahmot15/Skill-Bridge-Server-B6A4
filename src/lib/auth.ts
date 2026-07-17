@@ -30,7 +30,10 @@ export const auth = betterAuth({
       },
     },
   },
-  trustedOrigins: [process.env.APP_URL!, "https://skill-bridge-client-mauve.vercel.app",],
+  trustedOrigins: [
+    process.env.APP_URL!,
+    "https://skill-bridge-client-mauve.vercel.app",
+  ],
 
   emailVerification: {
     sendOnSignUp: true,
@@ -279,6 +282,6 @@ export const auth = betterAuth({
     },
   },
   redirects: {
-  signInSuccess: process.env.APP_URL!,
-},
+    signInSuccess: process.env.APP_URL!,
+  },
 });

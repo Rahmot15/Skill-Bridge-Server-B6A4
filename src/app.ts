@@ -12,9 +12,15 @@ import { AdminRoutes } from "./modules/admin/admin.route";
 
 const app: Application = express();
 
+const allowedOrigins = [
+  process.env.APP_URL,
+  "https://skill-bridge-client-mauve.vercel.app",
+  "http://localhost:3000",
+].filter((origin): origin is string => Boolean(origin));
+
 app.use(
   cors({
-    origin: process.env.APP_URL || "https://skill-bridge-client-mauve.vercel.app",
+    origin: allowedOrigins,
     credentials: true,
   }),
 );

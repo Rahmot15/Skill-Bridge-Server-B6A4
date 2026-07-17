@@ -409,11 +409,6 @@ var auth = betterAuth({
     provider: "postgresql"
     // or "mysql", "postgresql", ...etc
   }),
-  cookies: {
-    domain: ".vercel.app",
-    secure: true,
-    sameSite: "none"
-  },
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
@@ -427,7 +422,10 @@ var auth = betterAuth({
       }
     }
   },
-  trustedOrigins: [process.env.APP_URL, "http://localhost:3000"],
+  trustedOrigins: [
+    process.env.APP_URL,
+    "https://skill-bridge-client-mauve.vercel.app"
+  ],
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
@@ -1130,9 +1128,14 @@ var AdminRoutes = router5;
 
 // src/app.ts
 var app = express6();
+var allowedOrigins = [
+  process.env.APP_URL,
+  "https://skill-bridge-client-mauve.vercel.app",
+  "http://localhost:3000"
+].filter((origin) => Boolean(origin));
 app.use(
   cors({
-    origin: process.env.APP_URL || "https://skill-bridge-client-mauve.vercel.app",
+    origin: allowedOrigins,
     credentials: true
   })
 );
