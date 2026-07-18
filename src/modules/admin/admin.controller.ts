@@ -32,8 +32,18 @@ const getAllBookings = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
+  const result = await AdminService.getDashboardStats();
+
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
 export const AdminController = {
   getAllUsers,
   updateUserStatus,
   getAllBookings,
+  getDashboardStats,
 };
