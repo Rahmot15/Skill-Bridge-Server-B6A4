@@ -9,6 +9,7 @@ import { CategoryRoutes } from "./modules/category/category.route";
 import { BookingRoutes } from "./modules/booking/booking.route";
 import { ReviewRoutes } from "./modules/review/review.route";
 import { AdminRoutes } from "./modules/admin/admin.route";
+import { apiLimiter, authLimiter } from "./middlewares/rateLimiter";
 
 const app: Application = express();
 
@@ -27,7 +28,10 @@ app.use(
 
 app.use(express.json());
 
-app.all("/api/auth/*splat", toNodeHandler(auth));
+// Global API rate limit
+app.use("/api", apiLimiter);
+
+app.all("/api/auth/*splat", authLimiter, toNodeHandler(auth));
 
 app.use("/api/tutors", TutorProfileRoutes);
 

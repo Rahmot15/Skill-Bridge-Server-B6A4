@@ -3,6 +3,7 @@ import auth, { UserRole } from "../../middlewares/auth";
 import validateRequest from "../../middlewares/validateRequest";
 import { BookingController } from "./booking.controller";
 import { bookingValidationSchema } from "./booking.validation";
+import { strictLimiter } from "../../middlewares/rateLimiter";
 
 const router = express.Router();
 
@@ -19,6 +20,7 @@ const router = express.Router();
 router.post(
   "/",
   auth(UserRole.STUDENT),
+  strictLimiter,
   validateRequest(bookingValidationSchema.createBookingSchema),
   BookingController.createBooking,
 );
