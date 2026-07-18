@@ -15,12 +15,14 @@ const transporter = nodemailer.createTransport({
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
-    provider: "postgresql", // or "mysql", "postgresql", ...etc
+    provider: "postgresql",
   }),
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
     requireEmailVerification: true,
+    minPasswordLength: 8,
+    maxPasswordLength: 128,
   },
   user: {
     additionalFields: {
@@ -30,10 +32,31 @@ export const auth = betterAuth({
       },
     },
   },
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24,     // refresh every 1 day
+    cookieCache: {
+      enabled: true,
+      maxAge: 60 * 60 * 24 * 7,
+    },
+  },
   trustedOrigins: [
     process.env.APP_URL!,
     "https://skill-bridge-client-mauve.vercel.app",
   ],
+  advanced: {
+    useSecureCookies: process.env.NODE_ENV === "production",
+    cookies: {
+      sessionToken: {
+        attributes: {
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+          httpOnly: true,
+          path: "/",
+        },
+      },
+    },
+  },
 
   emailVerification: {
     sendOnSignUp: true,
@@ -261,9 +284,8 @@ export const auth = betterAuth({
 `,
         });
 
-        console.log("Verification email sent:", info.messageId);
+        return;
       } catch (err) {
-        console.error("Error sending verification email:", err);
         throw err;
       }
     },
