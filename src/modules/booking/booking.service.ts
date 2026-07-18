@@ -49,9 +49,24 @@ const getBookingById = async (id: string) => {
 };
 
 const updateBookingStatus = async (id: string, status: BookingStatus) => {
-  return prisma.booking.update({
-    where: { id },
-    data: { status },
+  return prisma.$transaction(async (tx) => {
+    // 1. Update booking status
+    const booking = await tx.booking.update({
+      where: { id },
+      data: { status },
+    });
+
+    // 2. Always recalculate completedSessions for this tutor
+    const approvedCount = await tx.booking.count({
+      where: { tutorId: booking.tutorId, status: "APPROVED" },
+    });
+
+    await tx.tutorProfile.update({
+      where: { userId: booking.tutorId },
+      data: { completedSessions: approvedCount },
+    });
+
+    return booking;
   });
 };
 
