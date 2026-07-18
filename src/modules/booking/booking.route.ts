@@ -39,4 +39,11 @@ router.patch(
   BookingController.updateStatus,
 );
 
+router.patch(
+  "/:id/cancel",
+  auth(),
+  validateRequest(bookingValidationSchema.cancelBookingSchema),
+  BookingController.cancelBooking,
+);
+
 export const BookingRoutes = router;

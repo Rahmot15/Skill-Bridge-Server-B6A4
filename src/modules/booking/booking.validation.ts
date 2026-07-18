@@ -20,7 +20,14 @@ const updateBookingStatusSchema = z.object({
   }),
 });
 
+const cancelBookingSchema = z.object({
+  params: z.object({
+    id: z.string().min(1, "Booking ID is required"),
+  }),
+});
+
 export const bookingValidationSchema = {
   createBookingSchema,
   updateBookingStatusSchema,
+  cancelBookingSchema,
 };

@@ -105,10 +105,25 @@ const updateStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const cancelBooking = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user!.id;
+  const userRole = req.user!.role;
+
+  const result = await BookingService.cancelBooking(id as string, userId, userRole);
+
+  res.status(200).json({
+    success: true,
+    message: "Booking cancelled",
+    data: result,
+  });
+});
+
 export const BookingController = {
   createBooking,
   getMyBookings,
   getTutorBookings,
   getBookingById,
   updateStatus,
+  cancelBooking,
 };

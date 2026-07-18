@@ -70,10 +70,49 @@ const updateBookingStatus = async (id: string, status: BookingStatus) => {
   });
 };
 
+const cancelBooking = async (id: string, userId: string, userRole: string) => {
+  return prisma.$transaction(async (tx) => {
+    const booking = await tx.booking.findUnique({ where: { id } });
+
+    if (!booking) throw new Error("Booking not found");
+
+    // Only student (owner) or tutor (assigned) can cancel
+    if (userRole === "STUDENT" && booking.studentId !== userId) {
+      throw new Error("You can only cancel your own bookings");
+    }
+    if (userRole === "TUTOR" && booking.tutorId !== userId) {
+      throw new Error("You can only cancel bookings assigned to you");
+    }
+
+    // Cannot cancel already rejected/cancelled bookings
+    if (booking.status === "REJECTED" || booking.status === "CANCELLED") {
+      throw new Error("Booking is already rejected or cancelled");
+    }
+
+    const updated = await tx.booking.update({
+      where: { id },
+      data: { status: "CANCELLED" },
+    });
+
+    // Recalculate completedSessions
+    const approvedCount = await tx.booking.count({
+      where: { tutorId: booking.tutorId, status: "APPROVED" },
+    });
+
+    await tx.tutorProfile.update({
+      where: { userId: booking.tutorId },
+      data: { completedSessions: approvedCount },
+    });
+
+    return updated;
+  });
+};
+
 export const BookingService = {
   createBooking,
   getMyBookings,
   getTutorBookings,
   getBookingById,
   updateBookingStatus,
+  cancelBooking,
 };
