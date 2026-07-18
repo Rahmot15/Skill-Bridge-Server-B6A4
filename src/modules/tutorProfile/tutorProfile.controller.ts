@@ -25,7 +25,17 @@ const createTutorProfile = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllTutors = catchAsync(async (req: Request, res: Response) => {
-  const result = await TutorProfileService.getAllTutors();
+  const { search, minRating, maxPrice, verified, language, sort } = req.query;
+
+  const filters: Record<string, string | number | boolean> = {};
+  if (search) filters.search = String(search);
+  if (minRating) filters.minRating = parseFloat(String(minRating));
+  if (maxPrice) filters.maxPrice = parseFloat(String(maxPrice));
+  if (verified === "true") filters.verified = true;
+  if (language) filters.language = String(language);
+  if (sort) filters.sort = String(sort);
+
+  const result = await TutorProfileService.getAllTutors(filters);
 
   res.status(200).json({
     success: true,

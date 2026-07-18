@@ -31,11 +31,47 @@ const createTutorProfile = async (
   return result;
 };
 
-const getAllTutors = async () => {
+const getAllTutors = async (query?: Record<string, string | number | boolean>) => {
+  const where: any = {};
+
+  if (query?.search) {
+    const q = String(query.search);
+    where.OR = [
+      { title: { contains: q, mode: "insensitive" } },
+      { bio: { contains: q, mode: "insensitive" } },
+      { user: { name: { contains: q, mode: "insensitive" } } },
+      { languages: { has: q } },
+    ];
+  }
+
+  if (query?.minRating) {
+    where.rating = { gte: Number(query.minRating) };
+  }
+
+  if (query?.maxPrice) {
+    where.hourlyRate = { lte: Number(query.maxPrice) };
+  }
+
+  if (query?.verified) {
+    where.verified = true;
+  }
+
+  if (query?.language) {
+    where.languages = { has: String(query.language) };
+  }
+
+  // Sort
+  let orderBy: any = { rating: "desc" };
+  const sort = String(query?.sort || "");
+  if (sort === "price_asc") orderBy = { hourlyRate: "asc" };
+  else if (sort === "price_desc") orderBy = { hourlyRate: "desc" };
+  else if (sort === "students") orderBy = { totalStudents: "desc" };
+  else if (sort === "sessions") orderBy = { completedSessions: "desc" };
+
   return prisma.tutorProfile.findMany({
-    include: {
-      user: true,
-    },
+    where,
+    include: { user: true },
+    orderBy,
   });
 };
 
