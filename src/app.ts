@@ -1,5 +1,6 @@
 import express, { Application } from "express";
 import cors from "cors";
+import morgan from "morgan";
 import { TutorProfileRoutes } from "./modules/tutorProfile/tutorProfile.route";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
@@ -27,6 +28,9 @@ app.use(
 );
 
 app.use(express.json());
+
+// HTTP request logging
+app.use(morgan("dev"));
 
 // Global API rate limit
 app.use("/api", apiLimiter);
