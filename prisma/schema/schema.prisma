@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../../generated/prisma"
@@ -11,4 +5,171 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ─── User & Auth ───────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  STUDENT
+  TUTOR
+}
+
+model User {
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  role          Role     @default(STUDENT)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions Session[]
+  accounts Account[]
+
+  tutorProfile TutorProfile?
+
+  studentBookings Booking[] @relation("StudentBookings")
+  tutorBookings   Booking[] @relation("TutorBookings")
+
+  studentReviews Review[] @relation("StudentReviews")
+  tutorReviews   Review[] @relation("TutorReviews")
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+// ─── Category ──────────────────────────────────────────────
+
+model Category {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+
+  bookings Booking[]
+}
+
+// ─── Booking ───────────────────────────────────────────────
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Booking {
+  id         String        @id @default(uuid())
+  studentId  String
+  tutorId    String
+  categoryId String
+  message    String?
+  date       DateTime?
+  status     BookingStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+
+  student  User     @relation("StudentBookings", fields: [studentId], references: [id], onDelete: Cascade)
+  tutor    User     @relation("TutorBookings", fields: [tutorId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  review Review?
+
+  @@index([studentId])
+  @@index([tutorId])
+  @@index([categoryId])
+  @@index([tutorId, status])
+  @@index([status])
+}
+
+// ─── Review ────────────────────────────────────────────────
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String?
+  studentId String
+  tutorId   String
+  bookingId String   @unique
+  createdAt DateTime @default(now())
+
+  student User @relation("StudentReviews", fields: [studentId], references: [id], onDelete: Cascade)
+  tutor   User @relation("TutorReviews", fields: [tutorId], references: [id], onDelete: Cascade)
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([tutorId])
+}
+
+// ─── Tutor Profile ─────────────────────────────────────────
+
+model TutorProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  title           String?
+  bio             String?
+  education       String?
+  experienceYears Int?
+  hourlyRate      Int?
+  availability    String?
+
+  rating            Float @default(0)
+  totalReviews      Int   @default(0)
+  totalStudents     Int   @default(0)
+  completedSessions Int   @default(0)
+
+  languages String[]
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
