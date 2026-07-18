@@ -1,5 +1,11 @@
 import { NextFunction, Request, Response } from "express";
+import { ZodError } from "zod";
 import { Prisma } from "../../generated/prisma/client";
+
+type ErrorSource = {
+  path: string | number;
+  message: string;
+};
 
 const errorHandler = (
   err: any,
@@ -9,10 +15,20 @@ const errorHandler = (
 ) => {
   let statusCode = 500;
   let message = "Internal Server Error";
-  let details: any = null;
+  let errorSources: ErrorSource[] = [];
+
+  // Zod Validation Error
+  if (err instanceof ZodError) {
+    statusCode = 400;
+    message = "Validation Error";
+    errorSources = err.issues.map((issue) => ({
+      path: issue.path[issue.path.length - 1] as string | number,
+      message: issue.message,
+    }));
+  }
 
   // Prisma Validation Error
-  if (err instanceof Prisma.PrismaClientValidationError) {
+  else if (err instanceof Prisma.PrismaClientValidationError) {
     statusCode = 400;
     message = "Invalid input data or missing required fields.";
   }
@@ -21,14 +37,19 @@ const errorHandler = (
   else if (err instanceof Prisma.PrismaClientKnownRequestError) {
     switch (err.code) {
       case "P2002":
-        statusCode = 400;
-        message = "Duplicate value found. This record already exists.";
-        details = err.meta?.target;
+        statusCode = 409;
+        message = "Unique constraint violation";
+        const target = (err.meta?.target as string[]) || ["unknown"];
+        errorSources = target.map((field) => ({
+          path: field,
+          message: `${field} already exists.`,
+        }));
         break;
 
       case "P2025":
         statusCode = 404;
-        message = "Requested resource not found.";
+        message = (err.meta?.cause as string) || "Record not found";
+        errorSources = [{ path: "", message }];
         break;
 
       case "P2003":
@@ -70,13 +91,6 @@ const errorHandler = (
     message = "Critical database error.";
   }
 
-  // Zod Validation Error
-  else if (err.name === "ZodError") {
-    statusCode = 400;
-    message = "Validation failed.";
-    details = err.errors;
-  }
-
   // Better Auth Unauthorized
   else if (err.message?.includes("Unauthorized")) {
     statusCode = 401;
@@ -91,8 +105,8 @@ const errorHandler = (
   res.status(statusCode).json({
     success: false,
     message,
+    errorSources: errorSources.length > 0 ? errorSources : undefined,
     error: process.env.NODE_ENV === "development" ? err : undefined,
-    details,
   });
 };
 
