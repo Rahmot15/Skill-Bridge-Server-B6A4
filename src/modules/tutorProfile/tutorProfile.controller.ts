@@ -71,10 +71,12 @@ const updateTutorProfile = catchAsync(async (req: Request, res: Response) => {
 
 const updateAvailability = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user!.id;
+  const { availability, timeSlots } = req.body;
 
   const result = await TutorProfileService.updateAvailability(
     userId,
-    req.body.availability
+    availability,
+    timeSlots,
   );
 
   res.status(200).json({

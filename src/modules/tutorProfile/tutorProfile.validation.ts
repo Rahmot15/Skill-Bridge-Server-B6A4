@@ -43,9 +43,16 @@ const updateTutorProfileSchema = z.object({
   }),
 });
 
+const timeSlotSchema = z.object({
+  day: z.enum(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]),
+  from: z.string().regex(/^\d{2}:\d{2}$/, "Time must be HH:MM format"),
+  to: z.string().regex(/^\d{2}:\d{2}$/, "Time must be HH:MM format"),
+});
+
 const updateAvailabilitySchema = z.object({
   body: z.object({
-    availability: z.string().max(500, "Availability too long"),
+    availability: z.string().max(2000, "Availability too long").optional(),
+    timeSlots: z.array(timeSlotSchema).max(14, "Too many time slots").optional(),
   }),
 });
 

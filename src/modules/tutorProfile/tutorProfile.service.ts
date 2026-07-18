@@ -91,10 +91,14 @@ const updateTutorProfile = async (userId: string, payload: any) => {
   });
 };
 
-const updateAvailability = async (userId: string, availability: string) => {
+const updateAvailability = async (userId: string, availability: string, timeSlots?: any[]) => {
+  const data: any = {};
+  if (availability !== undefined) data.availability = availability;
+  if (timeSlots !== undefined) data.availability = JSON.stringify(timeSlots);
+
   return prisma.tutorProfile.update({
     where: { userId },
-    data: { availability },
+    data,
   });
 };
 
