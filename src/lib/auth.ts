@@ -41,7 +41,7 @@ export const auth = betterAuth({
     },
   },
   trustedOrigins: [
-    process.env.APP_URL!,
+    process.env.APP_URL || "http://localhost:3000",
     "https://skill-bridge-client-mauve.vercel.app",
   ],
   advanced: {
@@ -49,7 +49,7 @@ export const auth = betterAuth({
     cookies: {
       sessionToken: {
         attributes: {
-          sameSite: "lax",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
           secure: process.env.NODE_ENV === "production",
           httpOnly: true,
           path: "/",
